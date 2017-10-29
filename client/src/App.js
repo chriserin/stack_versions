@@ -1,19 +1,43 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import glam from 'glamorous';
+
+const AppCntnr = glam.div({
+  backgroundColor: '#c3c3c3'
+});
 
 class App extends Component {
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      versionData: []
+    }
+  }
+
+  componentDidMount() {
+    fetch('/api/versions').then(
+      results => {
+        return results.json()
+    }).then(data => this.setState({versionData: data}));
+  }
+
   render() {
+    let versions = [];
+    if (this.state.versionData) {
+      versions = this.state.versionData.map((version) => (
+        <div>
+          <span>{ version.name }</span>
+          <span>—</span>
+          <span>{ version.version }</span>
+        </div>
+      ));
+    }
+
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
+      <AppCntnr>
+        { versions }
+      </AppCntnr>
     );
   }
 }
