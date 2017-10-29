@@ -1,8 +1,15 @@
 import React, { Component } from 'react';
 import glam from 'glamorous';
+import DateFiller from './DateFiller';
+import DateRow from './DateRow';
+import moment from 'moment';
+import dateArray from 'moment-array-dates';
+import { first, last, groupBy, mapValues } from 'lodash';
 
 const AppCntnr = glam.div({
-  backgroundColor: '#c3c3c3'
+  backgroundColor: 'none',
+  margin: '0 auto',
+  width: '100%',
 });
 
 class App extends Component {
@@ -19,24 +26,59 @@ class App extends Component {
     fetch('/api/versions').then(
       results => {
         return results.json()
-    }).then(data => this.setState({versionData: data}));
+    }).then(data => {
+      const allDates = dateArray.range(
+        last(data).tagged_at,
+        moment(first(data).tagged_at).endOf('month')
+      );
+
+      const compareFn = (a, b) => {
+        const momentA = moment(a.tagged_at || a);
+        const momentB = moment(b.tagged_at || b);
+
+        if (momentA.isAfter(momentB, 'day')) {
+          return -1;
+        } else if (momentA.isBefore(momentB, 'day')) {
+          return 1;
+        } else {
+          if (a.taggedAt) {
+            return -1;
+          } else {
+            return 0;
+          }
+        }
+
+        return 0;
+      };
+
+      const everything = allDates.concat(data);
+      everything.sort(compareFn);
+      this.setState({versionData: groupBy(everything, (version) => {
+          return moment(version.tagged_at || version).startOf('day').format();
+        })
+      });
+    });
   }
 
   render() {
-    let versions = [];
+    let allVersions = [];
+
     if (this.state.versionData) {
-      versions = this.state.versionData.map((version) => (
-        <div>
-          <span>{ version.name }</span>
-          <span>—</span>
-          <span>{ version.version }</span>
-        </div>
-      ));
+      allVersions = Object.entries(this.state.versionData).map((groupedObject, _) => {
+
+        let [date, versions] = groupedObject;
+
+        if (versions.length > 1) {
+          return <DateRow date={date} data={versions}></DateRow>
+        } else {
+          return <DateFiller date={date} />
+        }
+      });
     }
 
     return (
       <AppCntnr>
-        { versions }
+        { allVersions }
       </AppCntnr>
     );
   }
