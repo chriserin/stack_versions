@@ -10,7 +10,7 @@ class DateRow extends Component {
       if (version.tagged_at)
         return <Version data={version}></Version>;
       else
-        return <Filler></Filler>;
+        return <Filler date={version}></Filler>;
     });
 
     return (

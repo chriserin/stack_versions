@@ -64,15 +64,10 @@ class App extends Component {
     let allVersions = [];
 
     if (this.state.versionData) {
-      allVersions = Object.entries(this.state.versionData).map((groupedObject, _) => {
-
+      allVersions = Object.entries(this.state.versionData).map((groupedObject) => {
         let [date, versions] = groupedObject;
 
-        if (versions.length > 1) {
-          return <DateRow date={date} data={versions}></DateRow>
-        } else {
-          return <DateFiller date={date} />
-        }
+        return <DateRow date={date} data={[].concat(versions)}></DateRow>
       });
     }
 
