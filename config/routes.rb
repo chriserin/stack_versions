@@ -1,5 +1,3 @@
 Rails.application.routes.draw do
-  scope '/api' do
-    get :versions, to: 'versions#index'
-  end
+  get :versions, to: 'versions#index'
 end
