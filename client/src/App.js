@@ -53,10 +53,14 @@ class App extends Component {
 
       const everything = allDates.concat(data);
       everything.sort(compareFn);
-      this.setState({versionData: groupBy(everything, (version) => {
-          return moment(version.tagged_at || version).startOf('day').format();
-        })
+
+      const groupedData = groupBy(everything, (version) => {
+        return moment(version.tagged_at || version).startOf('day').format();
       });
+
+      console.log(groupedData);
+
+      this.setState({versionData: groupedData});
     });
   }
 

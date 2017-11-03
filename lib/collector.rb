@@ -4,10 +4,6 @@ class Collector
   def self.collect(number_of_tags)
 
     repos = Software.all
-    repos = [
-      OpenStruct.new(owner: 'elixir-lang', name: 'elixir'),
-      OpenStruct.new(owner: 'ruby', name: 'ruby'),
-    ]
 
     repository_queries = repos.map do |repo|
       <<-GRAPHQL
